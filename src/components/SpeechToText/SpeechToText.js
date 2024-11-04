@@ -10,25 +10,24 @@ const STOP_WORDS = [
   'having', 'if', 'then', 'because', 'although', 'while', 'until', 'when', 'i', 'my', 'me', 'your', 'you'
 ];
 
-const WordDetailCard = ({ word, definition, synonyms, antonyms }) => {
-  return (
-    <div className="border overflow-y-auto rounded-lg p-6 mb-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bg-white shadow-md hover:shadow-lg transition-shadow duration-300 h-64 flex flex-col justify-between">
-      <h2 className="font-bold text-xl text-cyan-600"> {definition ? word : word + " (bad request)"}</h2>
-      <p className="mt-2 text-gray-700">
-        <strong>Definition:</strong> {definition || 'Loading...'}
-      </p>
-      <div>
-        <p className="mt-2 text-gray-600">
-          <strong>Synonyms:</strong> {synonyms?.length > 0 ? synonyms.join(', ') : 'None'}
+const WordDetailCard = ({ word, definition, synonyms, antonyms, theme }) => {
+    return (
+      <div className={`border overflow-y-auto rounded-lg p-6 mb-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 shadow-md hover:shadow-lg transition-shadow duration-300 h-64 flex flex-col justify-between ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
+        <h2 className="font-bold text-xl text-cyan-600">{definition ? word : word + " (bad request)"}</h2>
+        <p className="mt-2">
+          <strong>Definition:</strong> {definition || 'Loading...'}
         </p>
-        <p className="mt-2 text-gray-600">
-          <strong>Antonyms:</strong> {antonyms?.length > 0 ? antonyms.join(', ') : 'None'}
-        </p>
+        <div>
+          <p className="mt-2">
+            <strong>Synonyms:</strong> {synonyms?.length > 0 ? synonyms.join(', ') : 'None'}
+          </p>
+          <p className="mt-2">
+            <strong>Antonyms:</strong> {antonyms?.length > 0 ? antonyms.join(', ') : 'None'}
+          </p>
+        </div>
       </div>
-    </div>
-  );
-};
-
+    );
+  };
 const SpeechToText = () => {
   const dispatch = useDispatch();
   const { isRecognizing, totalFetchedDetails } = useSelector(state => state.speech);
@@ -108,7 +107,6 @@ const SpeechToText = () => {
   const toggleTheme = () => {
     setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
   };
-
   return (
     <div className={theme === 'dark' ? 'bg-gray-900 text-white min-h-screen' : 'bg-gray-100 text-black min-h-screen'}>
       <Navbar 
@@ -116,73 +114,78 @@ const SpeechToText = () => {
         toggleTheme={toggleTheme} 
       />
       
-      <div className="p-5 border border-cyan-800 max-w-xl mx-auto rounded-lg shadow-md">
-        <div className=' border border-red-700'>
-        <h1 className="text-2xl font-bold text-center mb-4">Speech to Text</h1>
-        <div className="flex justify-between mb-4">
-          <div>
-            {isRecognizing ? (
-              <>
-                <Spinner />
+      <div className="p-5 flex flex-col items-center justify-evenly mx-auto bg-transparent ">
+        <div className='flex flex-row justify-between space-x-4 w-full'>
+          
+          {/* Speech to Text Box */}
+          <div className={`w-full border shadow-md rounded-lg p-6 h-[50vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+            <h1 className="text-2xl font-bold text-center text-cyan-700 mb-4">Speech to Text</h1>
+            <div className="flex justify-between mb-4"></div>
+            <div className={`p-2 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}` }>
+              {speechIsOn || 'No speech detected yet.'}
+            </div>
+            <div className="flex items-center justify-end mt-4">
+              {isRecognizing ? (
+                <>
+                  <Spinner />
+                  <button 
+                    onClick={stopRecognitionHandler} 
+                    disabled={!isRecognizing}
+                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition ml-2"
+                  >
+                    Stop Recognition
+                  </button>
+                </>
+              ) : (
                 <button 
-                  onClick={stopRecognitionHandler} 
-                  disabled={!isRecognizing}
-                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition ml-2"
+                  onClick={startRecognitionHandler} 
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
                 >
-                  Stop Recognition
+                  Start Recognition
                 </button>
-              </>
-            ) : (
-              <button 
-                onClick={startRecognitionHandler} 
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
-              >
-                Start Recognition
-              </button>
-            )}
+              )}
+            </div>
+          </div>
+
+          {/* Summary Box */}
+          <div className={`w-full border shadow-md rounded-lg p-4 h-[50vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+            <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2>
+            <div className={`p-2 mt-10 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-8rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+              {summary || 'No summary available yet.'}
+            </div>
           </div>
         </div>
-        <p className="p-2 border border-gray-300 rounded bg-white mb-4">
-          {speechIsOn}
-        </p>
-
-        {/* Summary Box */}
-        <div className="p-2 border border-gray-300 rounded bg-white">
-          <h2 className="font-bold text-lg">Summary</h2>
-          <p>{summary || 'No summary available yet.'}</p>
-        </div>
-      </div>
-        </div>
-   
-
-      {/* Cards Layout with Search Bar */}
-      <div className='p-4'>
-        <div className="flex mb-4">
-          <input
-            type='text'
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder='Search for a word...'
-            className='border rounded-l-md p-2 flex-1'
-          />
-          <button 
-            onClick={() => console.log("Searching for:", searchTerm)}
-            className='bg-cyan-600 text-white rounded-r-md px-4 hover:bg-cyan-500 transition-colors duration-300'
-          >
-            Search
-          </button>
-        </div>
         
-        <div className='flex flex-wrap justify-evenly gap-4'>
-          {filteredWords.map(({ word, definition, synonyms, antonyms }, index) => (
-            <WordDetailCard 
-              key={index} 
-              word={word} 
-              definition={definition} 
-              synonyms={synonyms} 
-              antonyms={antonyms} 
+        {/* Cards Layout with Search Bar */}
+        <div className='p-4'>
+          <div className="flex mb-4">
+            <input
+              type='text'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder='Search for a word...'
+              className='border rounded-l-md p-2 flex-1'
             />
-          ))}
+            <button 
+              onClick={() => console.log("Searching for:", searchTerm)}
+              className='bg-cyan-600 text-white rounded-r-md px-4 hover:bg-cyan-500 transition-colors duration-300'
+            >
+              Search
+            </button>
+          </div>
+          
+          <div className='flex flex-wrap justify-evenly gap-4'>
+            {filteredWords.map(({ word, definition, synonyms, antonyms }, index) => (
+              <WordDetailCard 
+                key={index} 
+                word={word} 
+                definition={definition} 
+                synonyms={synonyms} 
+                antonyms={antonyms} 
+                theme={theme} // Pass the theme prop
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
