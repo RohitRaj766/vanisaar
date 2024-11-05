@@ -5,6 +5,7 @@ import { useSummary } from 'use-react-summary';
 import Spinner from './Spinner';
 import Navbar from './Navbar';
 import { FaSearch } from 'react-icons/fa';
+import { jsPDF } from "jspdf";
 
 
 const STOP_WORDS = [
@@ -147,6 +148,75 @@ const SpeechToText = () => {
     const toggleTheme = () => {
         setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
     };
+
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        const margin = { top: 20, left: 20, right: 20, bottom: 20 };
+        let yPosition = margin.top;
+
+        const addTextWithOverflow = (text, fontSize = 12) => {
+            doc.setFontSize(fontSize);
+            const pageHeight = doc.internal.pageSize.height;
+            const lineHeight = 5;
+            const lines = doc.splitTextToSize(text, doc.internal.pageSize.width - margin.left - margin.right);
+    
+      
+            for (let i = 0; i < lines.length; i++) {
+                if (yPosition + lineHeight > pageHeight - margin.bottom) {
+                    doc.addPage(); 
+                    yPosition = margin.top; 
+                }
+    
+                doc.text(lines[i], margin.left, yPosition);
+                yPosition += lineHeight; 
+            }
+        };
+    
+        
+        doc.setFontSize(18);
+        doc.text("Speech to Text Summary", margin.left, yPosition);
+        yPosition += 10; 
+    
+        doc.setFontSize(12);
+        addTextWithOverflow("Speech Transcription:", 14);
+        yPosition += 2;
+        addTextWithOverflow(storydata || 'No speech detected', 12);
+     
+        yPosition += 10;
+        addTextWithOverflow("Summary:", 14);
+        yPosition += 2;
+        addTextWithOverflow(summarizeText?.props?.children || 'No summary available', 12);
+    
+ 
+        yPosition += 10;
+        addTextWithOverflow("Important Words:", 14);
+        yPosition += 2;
+        if (finalWords.length > 0) {
+            finalWords.forEach((item, index) => {
+                const cleanedWord = item.word.replace(/[^a-zA-Z0-9\s]/g, '');
+                addTextWithOverflow(`${index + 1}. ${cleanedWord}`, 12);
+            });
+        } else {
+            addTextWithOverflow("No important words available.", 12);
+        }
+    
+
+        yPosition += 10;
+        addTextWithOverflow("Word Details:", 14);
+        yPosition += 2;
+        filteredWords.forEach((wordDetail, index) => {
+            yPosition += 2;
+            const { word, definition, synonyms, antonyms } = wordDetail;
+            addTextWithOverflow(`Word: ${word}`, 12);
+            addTextWithOverflow(`Definition: ${definition || 'No definition available'}`, 12);
+            addTextWithOverflow(`Synonyms: ${synonyms.length > 0 ? synonyms.join(', ') : 'None'}`, 12);
+            addTextWithOverflow(`Antonyms: ${antonyms.length > 0 ? antonyms.join(', ') : 'None'}`, 12);
+        });
+        doc.save("speech-to-text-summary.pdf");
+    };
+    
+    
+    
     return (
         <div className={theme === 'dark' ? 'bg-gray-900 text-white min-h-screen' : 'bg-gray-100 text-black min-h-screen'}>
             <Navbar
@@ -192,7 +262,13 @@ const SpeechToText = () => {
 
                     {/* Summary Box */}
                     <div className={`w-full mt-5 md:mt-0 border shadow-md rounded-lg p-4 h-auto md:h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
-                        <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2>
+                        <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2><button
+    onClick={generatePDF}
+    className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition mt-4"
+>
+    Download PDF
+</button>
+
                         <div className={`p-4 mt-10 border rounded-lg shadow-md overflow-y-auto  h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-black border-gray-300'}`}
                         >
                             {/* Loading/Error and Summary Section */}
