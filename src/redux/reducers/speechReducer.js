@@ -26,21 +26,19 @@ const speechReducer = (state = initialState, action) => {
             return { ...state, transcription: action.payload };
 
         case SET_DEFINITION:
-            // First, combine the current `totalFetchedDetails` and new `action.payload`
             const updatedTotalFetchedDetails = [
                 ...state.totalFetchedDetails,
                 ...action.payload
             ];
-
-            // Now filter out duplicates by checking if the word already exists
+     
             const uniqueTotalFetchedDetails = updatedTotalFetchedDetails.filter((item, index, self) =>
-                index === self.findIndex((t) => t.word === item.word)  // Unique check based on 'word' property
+                index === self.findIndex((t) => t.word === item.word) 
             );
 
             return {
                 ...state,
-                singleFetchedDetails: action.payload,  // Store the fetched data
-                totalFetchedDetails: uniqueTotalFetchedDetails,  // Store unique details only
+                singleFetchedDetails: action.payload,
+                totalFetchedDetails: uniqueTotalFetchedDetails,
             };
 
         case ADD_TALK_HISTORY:

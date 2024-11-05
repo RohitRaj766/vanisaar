@@ -4,6 +4,8 @@ import { startRecognition, stopRecognition, setTranscription } from '../../redux
 import { useSummary } from 'use-react-summary';
 import Spinner from './Spinner';
 import Navbar from './Navbar';
+import { FaSearch } from 'react-icons/fa';
+
 
 const STOP_WORDS = [
     'a', 'an', 'and', 'the', 'but', 'or', 'for', 'to', 'with', 'at', 'in', 'on',
@@ -13,36 +15,49 @@ const STOP_WORDS = [
 
 const WordDetailCard = ({ word, definition, synonyms, antonyms, theme }) => {
     return (
-        <div className={`border overflow-y-auto rounded-lg p-6 mb-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 shadow-md hover:shadow-lg transition-shadow duration-300 h-64 flex flex-col justify-between ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
-            <h2 className="font-bold text-xl text-cyan-600">{definition ? word : word + " (bad request)"}</h2>
-            <p className="mt-2">
-                <strong>Definition:</strong> {definition || 'Loading...'}
-            </p>
+        <div className={`border overflow-y-auto cursor-pointer rounded-lg p-6 mb-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 shadow-md hover:shadow-lg  transform hover:scale-110 transition-transform duration-300 ease-in-out
+                        min-w-[300px] h-auto md:min-h-[200px] flex flex-col  ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`} onClick={() => window.open(`https://www.google.com/search?q=${word}`, '_blank')} title="Click to search for more information about this word on Google">
+            <h2
+                className="font-bold text-xl text-cyan-800 underline cursor-pointer "
+                onClick={() => window.open(`https://www.google.com/search?q=${word}`, '_blank')}
+                title="Click to search for more information about this word on Google"
+            >
+                {definition ? word : word + " (bad request)"}
+            </h2>
+
+
+            {definition ?
+                <p className="mt-2">
+                    <strong className='text-cyan-600'>Definition:</strong> {definition || 'Loading...'}
+                </p> : "Oop's something went wrong!"
+            }
             <div>
-                <p className="mt-2">
-                    <strong>Synonyms:</strong> {synonyms?.length > 0 ? synonyms.join(', ') : 'None'}
-                </p>
-                <p className="mt-2">
-                    <strong>Antonyms:</strong> {antonyms?.length > 0 ? antonyms.join(', ') : 'None'}
-                </p>
+                {synonyms.length ?
+                    <p className="mt-2 ">
+                        <strong className='text-cyan-600'>Synonyms:</strong> {synonyms?.length > 0 ? synonyms.join(', ') : 'None'}
+                    </p>:""
+                }
+                {antonyms.length ?
+                    <p className="mt-2">
+                        <strong className='text-cyan-600'>Antonyms:</strong> {antonyms?.length > 0 ? antonyms.join(', ') : 'None'}
+                    </p>:""
+                }
             </div>
         </div>
     );
 };
+
+
 const SpeechToText = () => {
     const dispatch = useDispatch();
     const { isRecognizing, totalFetchedDetails } = useSelector(state => state.speech);
     const recognitionRef = useRef(null);
     const [finalWords, setFinalWords] = useState([]);
-    const [summarizedfinalWords, setSummarizedFinalWords] = useState([]);
     const [speechIsOn, setSpeechIsOn] = useState('');
-    const [summary, setSummary] = useState('');
     const [searchTerm, setSearchTerm] = useState("");
     const [theme, setTheme] = useState('light');
     const [storydata, setStorydata] = useState();
     const [ImpLENGHT, setImpLENGTH] = useState();
-
-
 
     useEffect(() => {
         if ('webkitSpeechRecognition' in window) {
@@ -91,27 +106,25 @@ const SpeechToText = () => {
             setImpLENGTH(len);
             setTimeout(() => {
                 dispatch(setTranscription(uniqueWords));
-                setSummary(uniqueWords.join(', '));
             }, 300);
             setStorydata(speechIsOn)
         }
 
     };
     const text = storydata;
-    const { summarizeText, isLoading, error } = useSummary({ text, words: 100 });
+    const { summarizeText, isLoading, error } = useSummary({ text, words: 200 });
+
     useEffect(() => {
         const wordformsummary = summarizeText.props.children.split(" ").filter(word => word.trim().length > 0);
         const FilterWords = wordformsummary.filter((word) => {
             return !STOP_WORDS.includes(word.toLowerCase());
         });
-        const removeSymbols = /[^a-zA-Z0-9\s]/g;
-
-        const cleanedWords = FilterWords.map(word => word.replace(removeSymbols, ''));
-  
-        setSummarizedFinalWords(cleanedWords.join(', '));
 
         if (ImpLENGHT - 2 === totalFetchedDetails.length) {
-            dispatch(setTranscription(FilterWords))
+            console.log(true)
+            setTimeout(() => {
+                dispatch(setTranscription(FilterWords))
+            }, 3000)
         }
 
         const uniqueFinalWords = totalFetchedDetails.filter((item, index, self) =>
@@ -119,7 +132,7 @@ const SpeechToText = () => {
         );
 
 
-        setFinalWords([...uniqueFinalWords]);  
+        setFinalWords([...uniqueFinalWords]);
         setStorydata(speechIsOn);
 
     }, [totalFetchedDetails]);
@@ -142,10 +155,10 @@ const SpeechToText = () => {
             />
 
             <div className="p-5 flex flex-col items-center justify-evenly mx-auto bg-transparent ">
-                <div className='flex flex-row justify-between space-x-4 w-full'>
+                <div className='flex flex-col md:flex-row justify-between gap-5 w-full'>
 
                     {/* Speech to Text Box */}
-                    <div className={`w-full border shadow-md rounded-lg p-6 h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+                    <div className={`w-full border shadow-md rounded-lg p-6  h-auto md:h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
                         <h1 className="text-2xl font-bold text-center text-cyan-700 mb-4">Speech to Text</h1>
                         <div className="flex justify-between mb-4"></div>
                         <div className={`p-2 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
@@ -178,52 +191,80 @@ const SpeechToText = () => {
                     </div>
 
                     {/* Summary Box */}
-                    <div className={`w-full border shadow-md rounded-lg p-4 h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+                    <div className={`w-full mt-5 md:mt-0 border shadow-md rounded-lg p-4 h-auto md:h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
                         <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2>
-                        <div className={`p-2 mt-10 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-8rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
-                            <p>
-                                <div className=' text-cyan-700'>
-                                    {isLoading && <p>Loading...</p>}
-                                    {error && <p>Error: {error}</p>}
-                                    {summarizeText}
-                                </div>
-                            </p>
-                            <br />
+                        <div className={`p-4 mt-10 border rounded-lg shadow-md overflow-y-auto  h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-black border-gray-300'}`}
+                        >
+                            {/* Loading/Error and Summary Section */}
+                            <div className="text-center mb-4">
+                                {isLoading && <p className="text-cyan-600 font-semibold text-lg">Loading...</p>}
+                                {/* {error && <p className="text-red-600 font-semibold text-lg">Error: {error}</p>} */}
+                                {summarizeText && (
+                                    <div className="text-cyan-700 text-lg mt-4">
+                                        {summarizeText}
+                                    </div>
+                                )}
+                            </div>
 
-                            <hr />
+                            <hr className="border-t-2 my-6" />
 
-                            <p className='mt-5'>Important words from speech and summary, details for each words is provided below. <br /><br />
+                            {/* Important Words Section */}
+                            <div className="mt-5">
+                                <p className="text-xl font-semibold text-cyan-700 mb-4">
+                                    Important Words from Speech and Summary:
+                                </p>
 
-                                {summary || 'No summary available yet.'} <br />
-                                {summarizedfinalWords}
+                                <p className="text-lg text-gray-700">
+                                    {finalWords.length === 0
+                                        ? 'Please wait until you have enough speech data.'
+                                        : finalWords.map((items, index) => {
+                                            const cleanedWord = items.word.replace(/[^a-zA-Z0-9\s]/g, '');
+                                            return (
+                                                <span
+                                                    key={index}
+                                                    className="inline-block cursor-pointer bg-blue-200 text-blue-700 px-3 py-1 rounded-lg m-1 text-sm font-medium hover:bg-blue-300 transition-all duration-300"
+                                                    onClick={() => {
+                                                        setSearchTerm(cleanedWord.toLowerCase());
+                                                        const scrollPosition = document.getElementById('detailCards')?.offsetTop;
+                                                        window.scrollTo({
+                                                            top: scrollPosition,
+                                                            behavior: 'smooth'
+                                                        });
+                                                    }}
+                                                    title='Click on me to know my details'
+                                                >
+                                                    {cleanedWord}
+                                                </span>
 
-                            </p>
-
+                                            );
+                                        })}
+                                </p>
+                            </div>
                         </div>
+
                         <p className='text-left mt-5'>
-                            Total important words in summary - {finalWords.length}
+                            Total important words gathered - {finalWords.length}
+                            {console.log(finalWords)}
                         </p>
                     </div>
                 </div>
 
                 {/* Cards Layout with Search Bar */}
-                <div className='p-4'>
-                    <div className="flex mb-4">
+                <div className='p-4 mt-8 flex flex-col items-center justify-center'>
+                    <div className="flex mb-4 w-[300px] md:w-[500px] ">
                         <input
                             type='text'
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder='Search for a word...'
-                            className='border rounded-l-md p-2 flex-1'
+                            className={`border rounded-l-md p-2 flex-1 w-1/4 justify-center items-center outline-none ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}
                         />
-                        <button
-                            className='bg-cyan-600 text-white rounded-r-md px-4 hover:bg-cyan-500 transition-colors duration-300'
-                        >
-                            Search
+                        <button className='bg-cyan-600 text-white rounded-r-md px-4 hover:bg-cyan-500 transition-colors duration-300'>
+                            <FaSearch className="text-white" />
                         </button>
                     </div>
 
-                    <div className='flex flex-wrap justify-evenly gap-4'>
+                    <div className='flex flex-wrap justify-evenly gap-4 mt-10' id='detailCards'>
                         {filteredWords.map(({ word, definition, synonyms, antonyms }, index) => (
                             <WordDetailCard
                                 key={index}
@@ -231,10 +272,12 @@ const SpeechToText = () => {
                                 definition={definition}
                                 synonyms={synonyms}
                                 antonyms={antonyms}
-                                theme={theme} 
+                                theme={theme}
                             />
                         ))}
                     </div>
+
+
                 </div>
             </div>
         </div>

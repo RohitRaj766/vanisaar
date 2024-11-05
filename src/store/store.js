@@ -1,9 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-import rootReducer from '../redux/rootReducer'; // Assuming you have an index file in the reducers folder
-import rootSaga from '../redux/rootSaga'; // Assuming you have an index file in the sagas folder
+import rootReducer from '../redux/rootReducer'; 
+import rootSaga from '../redux/rootSaga'; 
 
-// Initialize redux-saga middleware
 const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
@@ -12,7 +11,6 @@ const store = configureStore({
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
 });
 
-// Run the root saga
 sagaMiddleware.run(rootSaga);
 
 export default store;

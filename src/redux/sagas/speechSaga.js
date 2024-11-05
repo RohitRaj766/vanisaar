@@ -2,7 +2,7 @@ import { call, put, takeLatest, delay } from 'redux-saga/effects';
 import { SET_TRANSCRIPTION, setDefinition } from '../actions/speechActions';
 
 function* fetchWordData(action) {
-  const words = action.payload; // Expect an array of words
+  const words = action.payload; //yaha pe we need to provide a array of words to search
 
 
   const allDetails = [];
@@ -28,9 +28,9 @@ function* fetchWordData(action) {
       }
 
       allDetails.push(details);
-      yield put(setDefinition([...allDetails])); // Update the UI with each word's details
+      yield put(setDefinition([...allDetails]));
 
-      yield delay(200); // Delay to prevent API rate-limiting issues
+      yield delay(200);
 
     } catch (error) {
       console.error('Error fetching word data:', error);
