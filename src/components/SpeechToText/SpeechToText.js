@@ -127,7 +127,7 @@ const SpeechToText = () => {
         <div className='flex flex-row justify-between space-x-4 w-full'>
           
           {/* Speech to Text Box */}
-          <div className={`w-full border shadow-md rounded-lg p-6 h-[50vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+          <div className={`w-full border shadow-md rounded-lg p-6 h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
             <h1 className="text-2xl font-bold text-center text-cyan-700 mb-4">Speech to Text</h1>
             <div className="flex justify-between mb-4"></div>
             <div className={`p-2 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}` }>
@@ -157,17 +157,21 @@ const SpeechToText = () => {
           </div>
 
           {/* Summary Box */}
-          <div className={`w-full border shadow-md rounded-lg p-4 h-[50vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+          <div className={`w-full border shadow-md rounded-lg p-4 h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
             <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2>
             <div className={`p-2 mt-10 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-8rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
-              {summary || 'No summary available yet.'}
-              <p>
-              <div>
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
+            <p>
+              <div className=' text-cyan-700'>
+      {/* {isLoading && <p>Loading...</p>} */}
+      {/* {error && <p>Error: {error}</p>} */}
       {summarizeText}
     </div>
               </p>
+            
+            <p className='mt-5'>
+                  {summary || 'No summary available yet.'}
+            </p>
+        
             </div>
           </div>
         </div>
