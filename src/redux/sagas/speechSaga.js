@@ -3,12 +3,11 @@ import { SET_TRANSCRIPTION, setDefinition } from '../actions/speechActions';
 
 function* fetchWordData(action) {
   const words = action.payload; // Expect an array of words
-  console.log("words sagagagagag :: ", words)
+
 
   const allDetails = [];
 
   for (const word of words) {
-  console.log("words dsasasdadaddadadadad :: ", word)
 
     let details = {
       word: word,
@@ -44,3 +43,4 @@ function* watchFetchWordData() {
 }
 
 export default watchFetchWordData;
+

@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { startRecognition, stopRecognition, setTranscription } from '../../redux/actions/speechActions';
+import {useSummary} from 'use-react-summary';
 import Spinner from './Spinner';
 import Navbar from './Navbar';
 
 const STOP_WORDS = [
   'a', 'an', 'and', 'the', 'but', 'or', 'for', 'to', 'with', 'at', 'in', 'on', 
   'by', 'as', 'of', 'so', 'that', 'is', 'was', 'were', 'are', 'be', 'been', 
-  'having', 'if', 'then', 'because', 'although', 'while', 'until', 'when', 'i', 'my', 'me', 'your', 'you'
+  'having', 'if', 'then', 'because', 'although', 'while', 'until', 'when', 'i', 'my', 'me', 'your', 'you','very','do','it'
 ];
 
 const WordDetailCard = ({ word, definition, synonyms, antonyms, theme }) => {
@@ -27,17 +28,19 @@ const WordDetailCard = ({ word, definition, synonyms, antonyms, theme }) => {
         </div>
       </div>
     );
-  };
+};
 const SpeechToText = () => {
-  const dispatch = useDispatch();
-  const { isRecognizing, totalFetchedDetails } = useSelector(state => state.speech);
-  
+    const dispatch = useDispatch();
+    const { isRecognizing, totalFetchedDetails } = useSelector(state => state.speech);
   const recognitionRef = useRef(null);
   const [finalWords, setFinalWords] = useState([]);
   const [speechIsOn, setSpeechIsOn] = useState('');
   const [summary, setSummary] = useState(''); // New state for summary
   const [searchTerm, setSearchTerm] = useState("");
   const [theme, setTheme] = useState('light'); // Add theme state
+  const [storydata, setStorydata] = useState();
+  
+
 
   useEffect(() => {
     if ('webkitSpeechRecognition' in window) {
@@ -87,15 +90,21 @@ const SpeechToText = () => {
         dispatch(setTranscription(uniqueWords)); 
         // Set a summary based on the unique words (for demonstration)
         setSummary(`Summary of words: ${uniqueWords.join(', ')}`);
-      }, 300);
+    }, 300);
+    setStorydata(speechIsOn)
     }
+   
   };
+  const text = storydata;
+  const { summarizeText, isLoading, error } = useSummary({ text, words: 100 });
+//   console.log("storydate :: ", text)
 
   useEffect(() => {
     const uniqueFinalWords = totalFetchedDetails.filter((item, index, self) =>
       index === self.findIndex((t) => t.word === item.word)
     );
     setFinalWords(uniqueFinalWords);
+    setStorydata(speechIsOn)
   }, [totalFetchedDetails]);
 
   // Filtered words based on search term
@@ -118,7 +127,7 @@ const SpeechToText = () => {
         <div className='flex flex-row justify-between space-x-4 w-full'>
           
           {/* Speech to Text Box */}
-          <div className={`w-full border shadow-md rounded-lg p-6 h-[50vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+          <div className={`w-full border shadow-md rounded-lg p-6 h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
             <h1 className="text-2xl font-bold text-center text-cyan-700 mb-4">Speech to Text</h1>
             <div className="flex justify-between mb-4"></div>
             <div className={`p-2 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}` }>
@@ -148,10 +157,21 @@ const SpeechToText = () => {
           </div>
 
           {/* Summary Box */}
-          <div className={`w-full border shadow-md rounded-lg p-4 h-[50vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+          <div className={`w-full border shadow-md rounded-lg p-4 h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
             <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2>
             <div className={`p-2 mt-10 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-8rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
-              {summary || 'No summary available yet.'}
+            <p>
+              <div className=' text-cyan-700'>
+      {/* {isLoading && <p>Loading...</p>} */}
+      {/* {error && <p>Error: {error}</p>} */}
+      {summarizeText}
+    </div>
+              </p>
+            
+            <p className='mt-5'>
+                  {summary || 'No summary available yet.'}
+            </p>
+        
             </div>
           </div>
         </div>
@@ -167,7 +187,6 @@ const SpeechToText = () => {
               className='border rounded-l-md p-2 flex-1'
             />
             <button 
-              onClick={() => console.log("Searching for:", searchTerm)}
               className='bg-cyan-600 text-white rounded-r-md px-4 hover:bg-cyan-500 transition-colors duration-300'
             >
               Search
