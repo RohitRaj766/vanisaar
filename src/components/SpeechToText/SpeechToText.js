@@ -65,32 +65,49 @@ const SpeechToText = () => {
             const recognition = new window.webkitSpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = true;
-
+    
+            // Flag to track final result
+            let lastRecognizedText = '';
+    
             recognition.onstart = () => {
                 dispatch(startRecognition());
             };
-
+    
             recognition.onresult = (event) => {
                 const interimText = Array.from(event.results)
                     .map(result => result[0].transcript)
                     .join(' ');
-
-                setSpeechIsOn(interimText);
+    
+                // Avoid redundant updates by checking if interimText has changed
+                if (interimText !== lastRecognizedText) {
+                    setSpeechIsOn(interimText);  // Update state with interim result
+                    lastRecognizedText = interimText;
+                }
+    
+                // You can also handle the final result to ensure correct updates
+                if (event.results[event.results.length - 1].isFinal) {
+                    const finalText = interimText.trim();
+                    if (finalText !== lastRecognizedText) {
+                        setSpeechIsOn(finalText);  // Update state with final recognized result
+                        lastRecognizedText = finalText;
+                    }
+                }
             };
-
+    
             recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
             };
-
+    
             recognition.onend = () => {
                 dispatch(stopRecognition());
             };
-
+    
             recognitionRef.current = recognition;
         } else {
             console.error('Speech recognition not supported in this browser.');
         }
     }, [dispatch]);
+    
 
     const startRecognitionHandler = () => {
         if (recognitionRef.current) {
