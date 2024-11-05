@@ -222,6 +222,7 @@ const SpeechToText = () => {
             <Navbar
                 theme={theme}
                 toggleTheme={toggleTheme}
+                generatePDF={generatePDF}
             />
 
             <div className="p-5 flex flex-col items-center justify-evenly mx-auto bg-transparent ">
@@ -262,12 +263,7 @@ const SpeechToText = () => {
 
                     {/* Summary Box */}
                     <div className={`w-full mt-5 md:mt-0 border shadow-md rounded-lg p-4 h-auto md:h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
-                        <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2><button
-    onClick={generatePDF}
-    className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition mt-4"
->
-    Download PDF
-</button>
+                        <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2>
 
                         <div className={`p-4 mt-10 border rounded-lg shadow-md overflow-y-auto  h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-black border-gray-300'}`}
                         >
