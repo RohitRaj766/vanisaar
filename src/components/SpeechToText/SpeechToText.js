@@ -89,7 +89,6 @@ const SpeechToText = () => {
             const uniqueWords = Array.from(new Set(wordsArray));
             const len = uniqueWords.length
             setImpLENGTH(len);
-            console.log("uniquie lenght::: ", len)
             setTimeout(() => {
                 dispatch(setTranscription(uniqueWords));
                 setSummary(uniqueWords.join(', '));
@@ -106,8 +105,6 @@ const SpeechToText = () => {
             return !STOP_WORDS.includes(word.toLowerCase());
         });
         const removeSymbols = /[^a-zA-Z0-9\s]/g;
-
-        console.log("Filtered Words: ", FilterWords);
 
         const cleanedWords = FilterWords.map(word => word.replace(removeSymbols, ''));
   
@@ -198,7 +195,7 @@ const SpeechToText = () => {
                             <p className='mt-5'>Important words from speech and summary, details for each words is provided below. <br /><br />
 
                                 {summary || 'No summary available yet.'} <br />
-                                {summarizedfinalWords}{console.log("summarizedfinalWords :: ", summarizedfinalWords)}
+                                {summarizedfinalWords}
 
                             </p>
 
