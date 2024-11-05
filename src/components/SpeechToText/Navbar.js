@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaSun, FaMoon } from 'react-icons/fa';
 
-const Navbar = ({ theme, toggleTheme, isRecognizing, startRecognitionHandler, stopRecognitionHandler }) => {
+const Navbar = ({ theme, toggleTheme}) => {
   return (
     <nav className={`flex justify-between items-center p-4 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'} shadow`}>
       <h1 className="text-xl font-bold">Vanisaar</h1>
