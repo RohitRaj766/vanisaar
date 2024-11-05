@@ -36,9 +36,9 @@ const SpeechToText = () => {
     const [finalWords, setFinalWords] = useState([]);
     const [summarizedfinalWords, setSummarizedFinalWords] = useState([]);
     const [speechIsOn, setSpeechIsOn] = useState('');
-    const [summary, setSummary] = useState(''); // New state for summary
+    const [summary, setSummary] = useState('');
     const [searchTerm, setSearchTerm] = useState("");
-    const [theme, setTheme] = useState('light'); // Add theme state
+    const [theme, setTheme] = useState('light');
     const [storydata, setStorydata] = useState();
     const [ImpLENGHT, setImpLENGTH] = useState();
 
@@ -92,7 +92,6 @@ const SpeechToText = () => {
             console.log("uniquie lenght::: ", len)
             setTimeout(() => {
                 dispatch(setTranscription(uniqueWords));
-                // Set a summary based on the unique words (for demonstration)
                 setSummary(uniqueWords.join(', '));
             }, 300);
             setStorydata(speechIsOn)
@@ -103,49 +102,38 @@ const SpeechToText = () => {
     const { summarizeText, isLoading, error } = useSummary({ text, words: 100 });
     useEffect(() => {
         const wordformsummary = summarizeText.props.children.split(" ").filter(word => word.trim().length > 0);
-
-        // Filter out stop words
         const FilterWords = wordformsummary.filter((word) => {
-            return !STOP_WORDS.includes(word.toLowerCase());  // Check if the word is not in STOP_WORDS (case insensitive)
+            return !STOP_WORDS.includes(word.toLowerCase());
         });
-        const removeSymbols = /[^a-zA-Z0-9\s]/g;  // This will match everything except alphabets, numbers, and spaces
+        const removeSymbols = /[^a-zA-Z0-9\s]/g;
 
         console.log("Filtered Words: ", FilterWords);
-        // Now remove symbols from each word
-const cleanedWords = FilterWords.map(word => word.replace(removeSymbols, ''));
 
-// Join the words into a string, separated by commas (or spaces, depending on your need)
-setSummarizedFinalWords(cleanedWords.join(', '));
-        console.log("storydate :: ", wordformsummary)
-        console.log("totalFetchedDetails :: ", totalFetchedDetails)
-        console.log("_LENGHT :: " + (ImpLENGHT - 2) + "totalFetchedDetails.length :: "+ totalFetchedDetails.length)
-        if(ImpLENGHT - 2 === totalFetchedDetails.length){
+        const cleanedWords = FilterWords.map(word => word.replace(removeSymbols, ''));
+  
+        setSummarizedFinalWords(cleanedWords.join(', '));
+
+        if (ImpLENGHT - 2 === totalFetchedDetails.length) {
             dispatch(setTranscription(FilterWords))
         }
-  
-        // const summarizedWords = summarizeText || " ";// Ensure no empty words
-    //   const mainsummary =summarizedWords ?  : " "; 
-        // Extract unique words from `totalFetchedDetails`
-        const uniqueFinalWords = totalFetchedDetails.filter((item, index, self) =>
-          index === self.findIndex((t) => t.word === item.word)
-        );
-      
-        // Summarized words will be an array (assuming summarizeText returns a string of text that you split)
-        // Combine unique words and summarized words
-        setFinalWords([...uniqueFinalWords]);  // Combine arrays if you need both
-      
-        // Optionally, set story data (if you want to keep the original speech)
-        setStorydata(speechIsOn);
-      
-      }, [totalFetchedDetails]);
-      
 
-    // Filtered words based on search term
+        const uniqueFinalWords = totalFetchedDetails.filter((item, index, self) =>
+            index === self.findIndex((t) => t.word === item.word)
+        );
+
+
+        setFinalWords([...uniqueFinalWords]);  
+        setStorydata(speechIsOn);
+
+    }, [totalFetchedDetails]);
+
+
+
     const filteredWords = finalWords.filter(({ word }) =>
         word.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Toggle theme function
+
     const toggleTheme = () => {
         setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
     };
@@ -168,7 +156,7 @@ setSummarizedFinalWords(cleanedWords.join(', '));
                         </div>
                         <div className="flex items-center justify-between mt-4">
                             <span className='text-left'>
-                              Total words in speech - {speechIsOn.split(' ').length - 1}
+                                Total words in speech - {speechIsOn.split(' ').length - 1}
                             </span>
                             {isRecognizing ? (
                                 <>
@@ -203,20 +191,20 @@ setSummarizedFinalWords(cleanedWords.join(', '));
                                     {summarizeText}
                                 </div>
                             </p>
-<br />
+                            <br />
 
                             <hr />
 
                             <p className='mt-5'>Important words from speech and summary, details for each words is provided below. <br /><br />
-                            
+
                                 {summary || 'No summary available yet.'} <br />
-                                {summarizedfinalWords}{console.log("summarizedfinalWords :: ",summarizedfinalWords)}
-                    
-</p>
+                                {summarizedfinalWords}{console.log("summarizedfinalWords :: ", summarizedfinalWords)}
+
+                            </p>
 
                         </div>
                         <p className='text-left mt-5'>
-                              Total important words in summary - {finalWords.length}
+                            Total important words in summary - {finalWords.length}
                         </p>
                     </div>
                 </div>
@@ -246,7 +234,7 @@ setSummarizedFinalWords(cleanedWords.join(', '));
                                 definition={definition}
                                 synonyms={synonyms}
                                 antonyms={antonyms}
-                                theme={theme} // Pass the theme prop
+                                theme={theme} 
                             />
                         ))}
                     </div>
