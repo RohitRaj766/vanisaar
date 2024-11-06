@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { startRecognition, stopRecognition, setTranscription } from '../../redux/actions/speechActions';
+import { startRecognition, setTranscription } from '../../redux/actions/speechActions';
 import { useSummary } from 'use-react-summary';
 import Spinner from './Spinner';
 import Navbar from './Navbar';
@@ -11,8 +11,18 @@ import { jsPDF } from "jspdf";
 const STOP_WORDS = [
     'a', 'an', 'and', 'the', 'but', 'or', 'for', 'to', 'with', 'at', 'in', 'on',
     'by', 'as', 'of', 'so', 'that', 'is', 'was', 'were', 'are', 'be', 'been',
-    'having', 'if', 'then', 'because', 'although', 'while', 'until', 'when', 'i', 'my', 'me', 'your', 'you', 'very', 'do', 'it'
+    'having', 'if', 'then', 'because', 'although', 'while', 'until', 'when', 'i', 'my', 'me', 'your', 'you', 'very', 'do', 'it',
+    'which', 'who', 'whom', 'this', 'these', 'those', 'how', 'why', 'where', 'here', 'there', 'can', 'could', 'should', 'would', 'shall', 
+    'will', 'just', 'up', 'down', 'out', 'into', 'over', 'under', 'again', 'further', 'more', 'most', 'some', 'any', 'each', 'every', 'few', 
+    'all', 'one', 'two', 'three', 'four', 'five', 'nor', 'not', 'only', 'own', 'same', 'such', 'than', 'too', 'very', 's', 't', 'can', 'will',
+    'just', 'don', 'should', 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 'haven', 'isn', 
+    'ma', 'mightn', 'mustn', 'needn', 'shan', 'shouldn', 'wasn', 'weren', 'won', 'wouldn',
+    "aren't", "haven't", "hasn't", "hadn't", "won't", "wouldn't", "can't", "couldn't", "don't", "doesn't", "didn't", "isn't", "wasn't", "weren't", 
+    "won't", "wouldn't", "doesn't", "didn't", "isn't", "wasn't", "weren't", "ain't", "isn't", "shouldn't", "mustn't", "needn't", "hasn't", "haven't",
+    "i'm", "you're", "he's", "she's", "it's", "we're", "they're", "i've", "you've", "we've", "they've", "i'll", "you'll", "he'll", "she'll", "it'll",
+    "we'll", "they'll", "i'd", "you'd", "he'd", "she'd", "it'd", "we'd", "they'd", "i've", "you've", "he's", "she's", "it's", "we're", "they're"
 ];
+
 
 const WordDetailCard = ({ word, definition, synonyms, antonyms, theme }) => {
     return (
@@ -51,7 +61,7 @@ const WordDetailCard = ({ word, definition, synonyms, antonyms, theme }) => {
 
 const SpeechToText = () => {
     const dispatch = useDispatch();
-    const { isRecognizing, totalFetchedDetails } = useSelector(state => state.speech);
+    const { totalFetchedDetails } = useSelector(state => state.speech);
     const recognitionRef = useRef(null);
     const [finalWords, setFinalWords] = useState([]);
     const [speechIsOn, setSpeechIsOn] = useState('');
@@ -59,62 +69,102 @@ const SpeechToText = () => {
     const [theme, setTheme] = useState('light');
     const [storydata, setStorydata] = useState();
     const [ImpLENGHT, setImpLENGTH] = useState();
+    const [mobileData, setMobileData] = useState([])
+    const [ismobileFlag, setIsMobileFlag] = useState(false);
+    const [recog,setRecog] = useState(false) 
 
     useEffect(() => {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        setIsMobileFlag(isMobile)
+        console.log("ismobile :: ",isMobile)
         if ('webkitSpeechRecognition' in window) {
             const recognition = new window.webkitSpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = true;
-    
-            // Flag to track final result
+
             let lastRecognizedText = '';
-    
+            
             recognition.onstart = () => {
                 dispatch(startRecognition());
             };
-    
+            
             recognition.onresult = (event) => {
                 const interimText = Array.from(event.results)
-                    .map(result => result[0].transcript)
-                    .join(' ');
-    
-                // Avoid redundant updates by checking if interimText has changed
+                .map(result => result[0].transcript)
+                .join(' ');
+                
+                console.log("interimText :: ", interimText)
+                console.log("event.results :: ", event.results)
+                
+                
                 if (interimText !== lastRecognizedText) {
-                    setSpeechIsOn(interimText);  // Update state with interim result
+                    setSpeechIsOn(interimText);
                     lastRecognizedText = interimText;
                 }
-    
-                // You can also handle the final result to ensure correct updates
+                
                 if (event.results[event.results.length - 1].isFinal) {
                     const finalText = interimText.trim();
                     if (finalText !== lastRecognizedText) {
-                        setSpeechIsOn(finalText);  // Update state with final recognized result
+                        setSpeechIsOn(finalText);
                         lastRecognizedText = finalText;
                     }
                 }
             };
-    
+            
+            if (isMobile) {
+                recognition.onresult = (event) => {
+                    const interimText = Array.from(event.results)
+                    .map(result => result[0].transcript)
+                    .join(' ');
+                    
+                    console.log("interimText :: ", interimText);
+                    console.log("event.results :: ", event.results);
+             
+                    const words = interimText.trim().split(/\s+/);  
+                    const uniqueWords = [...new Set(words)]; 
+                    
+                    console.log("Unique words in interimText:", uniqueWords);
+            
+                    setMobileData((prevData) => {
+                    const updatedMobileData = [...prevData];
+              
+                    uniqueWords.forEach((word) => {
+                        if (!updatedMobileData.includes(word)) {
+                            updatedMobileData.push(word);
+                        }
+                    });
+
+                    return updatedMobileData;
+                });
+           
+                if (interimText !== lastRecognizedText) {
+                    setSpeechIsOn(interimText);
+                    lastRecognizedText = interimText;
+                }
+
+                if (event.results[event.results.length - 1].isFinal) {
+                    const finalText = interimText.trim();
+                    if (finalText !== lastRecognizedText) {
+                        setSpeechIsOn(finalText);
+                      lastRecognizedText = finalText;
+                    }
+                  }
+                };
+            }
+            
+            
             recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
             };
-    
-            recognition.onend = () => {
-                dispatch(stopRecognition());
-            };
+     
     
             recognitionRef.current = recognition;
+            console.log("recognitionRef.current :: ", recognitionRef.current)
         } else {
             console.error('Speech recognition not supported in this browser.');
         }
     }, [dispatch]);
     
-
-    const startRecognitionHandler = () => {
-        if (recognitionRef.current) {
-            recognitionRef.current.start();
-        }
-    };
-
     const stopRecognitionHandler = () => {
         if (recognitionRef.current) {
             recognitionRef.current.stop();
@@ -126,14 +176,26 @@ const SpeechToText = () => {
                 dispatch(setTranscription(uniqueWords));
             }, 300);
             setStorydata(speechIsOn)
+            setRecog(false)
         }
 
     };
-    const text = storydata;
+
+    const startRecognitionHandler = () => {
+        if (recognitionRef.current) {
+            recognitionRef.current.start();
+            setRecog(true)
+        }
+    };
+
+    const text = ismobileFlag ? mobileData : storydata;
+
+
     const { summarizeText, isLoading, error } = useSummary({ text, words: 200 });
 
     useEffect(() => {
         const wordformsummary = summarizeText.props.children.split(" ").filter(word => word.trim().length > 0);
+        // const wordformsummaryMobile = summarizeText.props.children.split(" ").filter(word => word.trim().length > 0);
         const FilterWords = wordformsummary.filter((word) => {
             return !STOP_WORDS.includes(word.toLowerCase());
         });
@@ -197,7 +259,7 @@ const SpeechToText = () => {
         doc.setFontSize(12);
         addTextWithOverflow("Speech Transcription:", 14);
         yPosition += 2;
-        addTextWithOverflow(storydata || 'No speech detected', 12);
+        ismobileFlag ?  addTextWithOverflow(mobileData.toString().split(",").join(" ") || 'No speech detected', 12)     : addTextWithOverflow(storydata || 'No speech detected', 12);
      
         yPosition += 10;
         addTextWithOverflow("Summary:", 14);
@@ -249,19 +311,20 @@ const SpeechToText = () => {
                     <div className={`w-full border shadow-md rounded-lg p-6  h-auto md:h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
                         <h1 className="text-2xl font-bold text-center text-cyan-700 mb-4">Speech to Text</h1>
                         <div className="flex justify-between mb-4"></div>
-                        <div className={`p-2 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
-                            {speechIsOn || 'No speech detected yet.'}
+                        <div className={`p-2 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto md:h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+                            {ismobileFlag ? mobileData.toString().split(",").join(" ") : speechIsOn || 'No speech detected yet.'} {console.log(" mobile data ", mobileData.toString().split(",").join(" "))}
                         </div>
                         <div className="flex items-center justify-between mt-4">
                             <span className='text-left'>
-                                Total words in speech - {speechIsOn.split(' ').length - 1}
+                                Total words in speech - {ismobileFlag ? mobileData.length   : speechIsOn.split(' ').length - 1}
+                                
                             </span>
-                            {isRecognizing ? (
+                            {recog ? (
                                 <>
                                     <Spinner />
                                     <button
                                         onClick={stopRecognitionHandler}
-                                        disabled={!isRecognizing}
+                                        disabled={!recog}
                                         className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition ml-2"
                                     >
                                         Stop Recognition
