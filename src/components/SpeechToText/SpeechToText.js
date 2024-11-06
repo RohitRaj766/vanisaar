@@ -167,11 +167,14 @@ const SpeechToText = () => {
             recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
             };
+            recognition.onend = () =>{
+                console.log("Recognintion Stoped")
+            }
             recognitionRef.current = recognition;
         } else {
             console.error('Speech recognition not supported in this browser.');
         }
-    }, [dispatch,speechIsOn]);
+    }, [dispatch]);
 
     const stopRecognitionHandler = () => {
         if (recognitionRef.current) {
