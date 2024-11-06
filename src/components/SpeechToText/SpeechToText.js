@@ -171,7 +171,7 @@ const SpeechToText = () => {
         } else {
             console.error('Speech recognition not supported in this browser.');
         }
-    }, [dispatch]);
+    }, [dispatch,speechIsOn]);
 
     const stopRecognitionHandler = () => {
         if (recognitionRef.current) {
@@ -379,7 +379,7 @@ const SpeechToText = () => {
                                     }`}
                                 placeholder="No speech detected yet"
                                 readOnly={!isEditable}
-                                onChange={(e) => setSpeechIsOn(e.target.value)}
+                                onChange={(e) => {ismobileFlag ? setMobileData(e.target.value) : setSpeechIsOn(e.target.value)}}
                                 style={{
                                     minHeight: '300px',
                                     resize: 'vertical',
