@@ -5,23 +5,41 @@ import { useSummary } from 'use-react-summary';
 import Spinner from './Spinner';
 import Navbar from './Navbar';
 import { FaSearch } from 'react-icons/fa';
+import { FiEdit, FiCheck } from 'react-icons/fi';
 import { jsPDF } from "jspdf";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const STOP_WORDS = [
-    'a', 'an', 'and', 'the', 'but', 'or', 'for', 'to', 'with', 'at', 'in', 'on',
-    'by', 'as', 'of', 'so', 'that', 'is', 'was', 'were', 'are', 'be', 'been',
-    'having', 'if', 'then', 'because', 'although', 'while', 'until', 'when', 'i', 'my', 'me', 'your', 'you', 'very', 'do', 'it',
-    'which', 'who', 'whom', 'this', 'these', 'those', 'how', 'why', 'where', 'here', 'there', 'can', 'could', 'should', 'would', 'shall', 
-    'will', 'just', 'up', 'down', 'out', 'into', 'over', 'under', 'again', 'further', 'more', 'most', 'some', 'any', 'each', 'every', 'few', 
-    'all', 'one', 'two', 'three', 'four', 'five', 'nor', 'not', 'only', 'own', 'same', 'such', 'than', 'too', 'very', 's', 't', 'can', 'will',
-    'just', 'don', 'should', 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 'haven', 'isn', 
-    'ma', 'mightn', 'mustn', 'needn', 'shan', 'shouldn', 'wasn', 'weren', 'won', 'wouldn',
-    "aren't", "haven't", "hasn't", "hadn't", "won't", "wouldn't", "can't", "couldn't", "don't", "doesn't", "didn't", "isn't", "wasn't", "weren't", 
-    "won't", "wouldn't", "doesn't", "didn't", "isn't", "wasn't", "weren't", "ain't", "isn't", "shouldn't", "mustn't", "needn't", "hasn't", "haven't",
-    "i'm", "you're", "he's", "she's", "it's", "we're", "they're", "i've", "you've", "we've", "they've", "i'll", "you'll", "he'll", "she'll", "it'll",
-    "we'll", "they'll", "i'd", "you'd", "he'd", "she'd", "it'd", "we'd", "they'd", "i've", "you've", "he's", "she's", "it's", "we're", "they're"
+    "a", "an", "the", "and", "but", "or", "for", "to", "with", "at", "in", "on", "by", "as", "of", "so", "that", "is", "was", "were", "are", "be", "been",
+    "having", "if", "then", "because", "although", "while", "until", "when", "i", "my", "me", "your", "you", "very", "do", "it", "which", "who", "whom",
+    "this", "these", "those", "how", "why", "where", "here", "there", "can", "could", "should", "would", "shall", "will", "just", "up", "down", "out", "into",
+    "over", "under", "again", "further", "more", "most", "some", "any", "each", "every", "few", "all", "one", "two", "three", "four", "five", "nor", "not",
+    "only", "own", "same", "such", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now", "d", "ll", "m", "o", "re", "ve", "y", "ain",
+    "aren", "couldn", "didn", "doesn", "hadn", "hasn", "haven", "isn", "ma", "mightn", "mustn", "needn", "shan", "shouldn", "wasn", "weren", "won", "wouldn",
+    "aren't", "haven't", "hasn't", "hadn't", "won't", "wouldn't", "can't", "couldn't", "don't", "doesn't", "didn't", "isn't", "wasn't", "weren't", "won't",
+    "wouldn't", "doesn't", "didn't", "isn't", "wasn't", "weren't", "ain't", "isn't", "shouldn't", "mustn't", "needn't", "hasn't", "haven't", "i'm", "you're",
+    "he's", "she's", "it's", "we're", "they're", "i've", "you've", "we've", "they've", "i'll", "you'll", "he'll", "she'll", "it'll", "we'll", "they'll", "i'd",
+    "you'd", "he'd", "she'd", "it'd", "we'd", "they'd", "i've", "you've", "he's", "she's", "it's", "we're", "they're", "her", "their", "them", "has", "had",
+    "have", "doing", "how", "if", "each", "before", "after", "while", "up", "down", "back", "here", "there", "into", "out", "any", "again", "further", "so",
+    "what", "all", "still", "only", "much", "he", "she", "we", "they", "which", "who", "why", "when", "where", "how", "now", "than", "too", "very", "yes", "no",
+    "some", "every", "about", "above", "below", "between", "under", "over", "among", "through", "around", "across", "before", "after", "during", "together",
+    "without", "along", "beside", "like", "just", "more", "less", "both", "another", "each", "last", "first", "next", "only", "another", "those", "this",
+    "until", "while", "above", "across", "against", "along", "among", "around", "before", "behind", "below", "beyond", "despite", "during", "except", "for",
+    "from", "in", "into", "near", "of", "off", "on", "out", "over", "since", "through", "throughout", "to", "under", "until", "up", "upon", "with", "within",
+    "without", "yet", "about", "all", "also", "an", "and", "are", "aren’t", "be", "because", "been", "being", "before", "being", "both", "but", "by", "can",
+    "cannot", "could", "couldn’t", "did", "didn't", "does", "doesn't", "don't", "doing", "don't", "doesn't", "don't", "during", "each", "few", "fewer", "for",
+    "from", "had", "hadn't", "has", "hasn't", "have", "haven’t", "having", "how", "how’s", "if", "i'm", "i’ve", "into", "is", "isn't", "isn’t", "it", "it’s",
+    "it's", "its", "itself", "let", "let's", "may", "more", "must", "mustn't", "my", "myself", "myself", "neither", "nor", "not", "of", "off", "on", "once",
+    "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "outside", "over", "own", "same", "she", "she’s", "should", "shouldn’t", "so", "some",
+    "such", "than", "that", "that's", "the", "theirs", "them", "themselves", "then", "there", "there’s", "therefore", "they", "they're", "they've", "this",
+    "those", "through", "to", "too", "under", "until", "up", "upon", "very", "we", "we’re", "we’ve", "what", "what’s", "whatever", "when", "when’s", "where",
+    "where’s", "wherever", "whether", "which", "which’s", "while", "while’s", "who", "who’s", "whoever", "whom", "whom’s", "whose", "why", "why’s", "whynot",
+    "you", "you’re", "you’ve", "you’ll", "you’d", "your", "yours", "yourself", "yourselves", "your", "yourselves"
 ];
+
+
 
 
 const WordDetailCard = ({ word, definition, synonyms, antonyms, theme }) => {
@@ -46,12 +64,12 @@ const WordDetailCard = ({ word, definition, synonyms, antonyms, theme }) => {
                 {synonyms.length ?
                     <p className="mt-2 ">
                         <strong className='text-cyan-600'>Synonyms:</strong> {synonyms?.length > 0 ? synonyms.join(', ') : 'None'}
-                    </p>:""
+                    </p> : ""
                 }
                 {antonyms.length ?
                     <p className="mt-2">
                         <strong className='text-cyan-600'>Antonyms:</strong> {antonyms?.length > 0 ? antonyms.join(', ') : 'None'}
-                    </p>:""
+                    </p> : ""
                 }
             </div>
         </div>
@@ -71,37 +89,35 @@ const SpeechToText = () => {
     const [ImpLENGHT, setImpLENGTH] = useState();
     const [mobileData, setMobileData] = useState([])
     const [ismobileFlag, setIsMobileFlag] = useState(false);
-    const [recog,setRecog] = useState(false) 
+    const [recog, setRecog] = useState(false)
+    const [summing, setSumming] = useState(false)
+    const [isEditable, setIsEditable] = useState(false);
 
     useEffect(() => {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         setIsMobileFlag(isMobile)
-        console.log("ismobile :: ",isMobile)
         if ('webkitSpeechRecognition' in window) {
             const recognition = new window.webkitSpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = true;
 
             let lastRecognizedText = '';
-            
+
             recognition.onstart = () => {
                 dispatch(startRecognition());
             };
-            
+
             recognition.onresult = (event) => {
                 const interimText = Array.from(event.results)
-                .map(result => result[0].transcript)
-                .join(' ');
-                
-                console.log("interimText :: ", interimText)
-                console.log("event.results :: ", event.results)
-                
-                
+                    .map(result => result[0].transcript)
+                    .join(' ');
+
+
                 if (interimText !== lastRecognizedText) {
                     setSpeechIsOn(interimText);
                     lastRecognizedText = interimText;
                 }
-                
+
                 if (event.results[event.results.length - 1].isFinal) {
                     const finalText = interimText.trim();
                     if (finalText !== lastRecognizedText) {
@@ -110,81 +126,76 @@ const SpeechToText = () => {
                     }
                 }
             };
-            
+
             if (isMobile) {
                 recognition.onresult = (event) => {
                     const interimText = Array.from(event.results)
-                    .map(result => result[0].transcript)
-                    .join(' ');
-                    
-                    console.log("interimText :: ", interimText);
-                    console.log("event.results :: ", event.results);
-             
-                    const words = interimText.trim().split(/\s+/);  
-                    const uniqueWords = [...new Set(words)]; 
-                    
-                    console.log("Unique words in interimText:", uniqueWords);
-            
+                        .map(result => result[0].transcript)
+                        .join(' ');
+
+                    const words = interimText.trim().split(/\s+/);
+                    const uniqueWords = [...new Set(words)];
+
                     setMobileData((prevData) => {
-                    const updatedMobileData = [...prevData];
-              
-                    uniqueWords.forEach((word) => {
-                        if (!updatedMobileData.includes(word)) {
-                            updatedMobileData.push(word);
-                        }
+                        const updatedMobileData = [...prevData];
+
+                        uniqueWords.forEach((word) => {
+                            if (!updatedMobileData.includes(word)) {
+                                updatedMobileData.push(word);
+                            }
+                        });
+
+                        return updatedMobileData;
                     });
 
-                    return updatedMobileData;
-                });
-           
-                if (interimText !== lastRecognizedText) {
-                    setSpeechIsOn(interimText);
-                    lastRecognizedText = interimText;
-                }
-
-                if (event.results[event.results.length - 1].isFinal) {
-                    const finalText = interimText.trim();
-                    if (finalText !== lastRecognizedText) {
-                        setSpeechIsOn(finalText);
-                      lastRecognizedText = finalText;
+                    if (interimText !== lastRecognizedText) {
+                        setSpeechIsOn(interimText);
+                        lastRecognizedText = interimText;
                     }
-                  }
+
+                    if (event.results[event.results.length - 1].isFinal) {
+                        const finalText = interimText.trim();
+                        if (finalText !== lastRecognizedText) {
+                            setSpeechIsOn(finalText);
+                            lastRecognizedText = finalText;
+                        }
+                    }
                 };
             }
-            
-            
+
+
             recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
             };
-     
-    
             recognitionRef.current = recognition;
-            console.log("recognitionRef.current :: ", recognitionRef.current)
         } else {
             console.error('Speech recognition not supported in this browser.');
         }
     }, [dispatch]);
-    
+
     const stopRecognitionHandler = () => {
         if (recognitionRef.current) {
             recognitionRef.current.stop();
-            const wordsArray = speechIsOn.split(' ').filter(word => !STOP_WORDS.includes(word.toLowerCase()));
-            const uniqueWords = Array.from(new Set(wordsArray));
-            const len = uniqueWords.length
-            setImpLENGTH(len);
-            setTimeout(() => {
-                dispatch(setTranscription(uniqueWords));
-            }, 300);
-            setStorydata(speechIsOn)
-            setRecog(false)
+            setRecog(!recog)
         }
-
     };
+
+    const handleSummary = () => {
+        const wordsArray = speechIsOn.split(' ').filter(word => !STOP_WORDS.includes(word.toLowerCase()));
+        const uniqueWords = Array.from(new Set(wordsArray));
+        const len = uniqueWords.length
+        setImpLENGTH(len);
+        setTimeout(() => {
+            dispatch(setTranscription(uniqueWords));
+        }, 300);
+        setStorydata(speechIsOn)
+        setSumming(!summing)
+    }
 
     const startRecognitionHandler = () => {
         if (recognitionRef.current) {
             recognitionRef.current.start();
-            setRecog(true)
+            setRecog(!recog)
         }
     };
 
@@ -195,13 +206,11 @@ const SpeechToText = () => {
 
     useEffect(() => {
         const wordformsummary = summarizeText.props.children.split(" ").filter(word => word.trim().length > 0);
-        // const wordformsummaryMobile = summarizeText.props.children.split(" ").filter(word => word.trim().length > 0);
         const FilterWords = wordformsummary.filter((word) => {
             return !STOP_WORDS.includes(word.toLowerCase());
         });
 
         if (ImpLENGHT - 2 === totalFetchedDetails.length) {
-            console.log(true)
             setTimeout(() => {
                 dispatch(setTranscription(FilterWords))
             }, 3000)
@@ -238,35 +247,35 @@ const SpeechToText = () => {
             const pageHeight = doc.internal.pageSize.height;
             const lineHeight = 5;
             const lines = doc.splitTextToSize(text, doc.internal.pageSize.width - margin.left - margin.right);
-    
-      
+
+
             for (let i = 0; i < lines.length; i++) {
                 if (yPosition + lineHeight > pageHeight - margin.bottom) {
-                    doc.addPage(); 
-                    yPosition = margin.top; 
+                    doc.addPage();
+                    yPosition = margin.top;
                 }
-    
+
                 doc.text(lines[i], margin.left, yPosition);
-                yPosition += lineHeight; 
+                yPosition += lineHeight;
             }
         };
-    
-        
+
+
         doc.setFontSize(18);
         doc.text("Speech to Text Summary", margin.left, yPosition);
-        yPosition += 10; 
-    
+        yPosition += 10;
+
         doc.setFontSize(12);
         addTextWithOverflow("Speech Transcription:", 14);
         yPosition += 2;
-        ismobileFlag ?  addTextWithOverflow(mobileData.toString().split(",").join(" ") || 'No speech detected', 12)     : addTextWithOverflow(storydata || 'No speech detected', 12);
-     
+        ismobileFlag ? addTextWithOverflow(mobileData.toString().split(",").join(" ") || 'No speech detected', 12) : addTextWithOverflow(storydata || 'No speech detected', 12);
+
         yPosition += 10;
         addTextWithOverflow("Summary:", 14);
         yPosition += 2;
         addTextWithOverflow(summarizeText?.props?.children || 'No summary available', 12);
-    
- 
+
+
         yPosition += 10;
         addTextWithOverflow("Important Words:", 14);
         yPosition += 2;
@@ -278,7 +287,7 @@ const SpeechToText = () => {
         } else {
             addTextWithOverflow("No important words available.", 12);
         }
-    
+
 
         yPosition += 10;
         addTextWithOverflow("Word Details:", 14);
@@ -293,9 +302,51 @@ const SpeechToText = () => {
         });
         doc.save("speech-to-text-summary.pdf");
     };
-    
-    
-    
+
+    const toggleEdit = () => {
+        setIsEditable(!isEditable);
+    };
+
+
+    useEffect(() => {
+
+        if (summing && speechIsOn.length > 0) {
+            toast.success("Summarizing, Hold Tight!", {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+            });
+            setSumming(!summing)
+        }
+
+        if (summing && speechIsOn.length <= 0) {
+            toast.error("Oop's no data to summarize ", {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+            });
+            setSumming(!summing)
+        }
+
+    }, [recog, summing]);
+
+    useEffect(() => {
+        if (isEditable) {
+            toast.success("Edit mode is now enabled!", {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                icon: <FiCheck size={20} />,
+            });
+        }
+    }, [isEditable]);
+
     return (
         <div className={theme === 'dark' ? 'bg-gray-900 text-white min-h-screen' : 'bg-gray-100 text-black min-h-screen'}>
             <Navbar
@@ -303,21 +354,59 @@ const SpeechToText = () => {
                 toggleTheme={toggleTheme}
                 generatePDF={generatePDF}
             />
-
+            <ToastContainer />
             <div className="p-5 flex flex-col items-center justify-evenly mx-auto bg-transparent ">
                 <div className='flex flex-col md:flex-row justify-between gap-5 w-full'>
 
                     {/* Speech to Text Box */}
-                    <div className={`w-full border shadow-md rounded-lg p-6  h-auto md:h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+                    <div
+                        className={`w-full border shadow-md rounded-lg p-6 h-auto md:h-[80vh] ${theme === "dark" ? "bg-gray-800 text-white border-gray-600" : "bg-white border-gray-300"
+                            }`}
+                    >
                         <h1 className="text-2xl font-bold text-center text-cyan-700 mb-4">Speech to Text</h1>
-                        <div className="flex justify-between mb-4"></div>
-                        <div className={`p-2 border border-gray-300 rounded-lg bg-gray-50 shadow-inner overflow-y-auto md:h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
-                            {ismobileFlag ? mobileData.toString().split(",").join(" ") : speechIsOn || 'No speech detected yet.'} {console.log(" mobile data ", mobileData.toString().split(",").join(" "))}
+
+                        <div className="relative mb-4">
+                            <button
+                                onClick={toggleEdit}
+                                className="absolute top-[-40px] right-0 p-2 text-gray-500 hover:text-gray-700"
+                            >
+                                {isEditable ? <FiCheck size={24} /> : <FiEdit size={24} />}
+                            </button>
+
+                            <textarea
+                                value={ismobileFlag ? mobileData.toString().split(",").join(" ") : speechIsOn}
+                                className={`p-2 pl-8 flex justify-start outline-none border w-full rounded-lg bg-gray-50 shadow-inner overflow-y-auto md:h-[calc(100%-7rem)] ${theme === "dark" ? "bg-gray-800 text-white border-gray-600" : "bg-white border-gray-300"
+                                    }`}
+                                placeholder="No speech detected yet"
+                                readOnly={!isEditable}
+                                onChange={(e) => setSpeechIsOn(e.target.value)}
+                                style={{
+                                    minHeight: '300px',
+                                    resize: 'vertical',
+                                    paddingTop: '25px',
+                                }}
+                            />
+
+                            <style jsx>{`
+                textarea::-webkit-scrollbar {
+                    width: 8px; /* Set the width of the scrollbar */
+                }
+
+                textarea::-webkit-scrollbar-thumb {
+                    background-color: lightgray; /* Light gray color for the scrollbar thumb */
+                    border-radius: 10px; /* Rounded corners for the thumb */
+                }
+
+                textarea::-webkit-scrollbar-track {
+                    background-color: transparent; /* Make the track background transparent */
+                }
+            `}</style>
                         </div>
+
                         <div className="flex items-center justify-between mt-4">
-                            <span className='text-left'>
-                                Total words in speech - {ismobileFlag ? mobileData.length   : speechIsOn.split(' ').length - 1}
-                                
+                            <span className="text-left">
+                                Total words in speech -{" "}
+                                {ismobileFlag ? mobileData.length : speechIsOn.split(" ").length - 1}
                             </span>
                             {recog ? (
                                 <>
@@ -342,10 +431,10 @@ const SpeechToText = () => {
                     </div>
 
                     {/* Summary Box */}
-                    <div className={`w-full mt-5 md:mt-0 border shadow-md rounded-lg p-4 h-auto md:h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
+                    <div className={`summaryBox w-full mt-5 md:mt-0 border shadow-md rounded-lg p-4 h-auto md:h-[80vh] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white border-gray-300'}`}>
                         <h2 className="text-2xl font-bold text-center text-cyan-700 mb-4">Summary</h2>
 
-                        <div className={`p-4 mt-10 border rounded-lg shadow-md overflow-y-auto  h-[calc(100%-7rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-black border-gray-300'}`}
+                        <div className={`p-4 mt-10 border rounded-lg shadow-md overflow-y-auto  h-[calc(100%-9rem)] ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-black border-gray-300'}`}
                         >
                             {/* Loading/Error and Summary Section */}
                             <div className="text-center mb-4">
@@ -391,13 +480,25 @@ const SpeechToText = () => {
                                             );
                                         })}
                                 </p>
+
                             </div>
                         </div>
 
-                        <p className='text-left mt-5'>
-                            Total important words gathered - {finalWords.length}
-                            {console.log(finalWords)}
-                        </p>
+                        <div className="flex flex-col md:flex-row justify-between mt-5">
+
+
+                            <p className='text-left mt-5'>
+                                Total important words gathered - {finalWords.length}
+                            </p>
+                            <button
+                                onClick={handleSummary}
+                                className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
+                            >
+                                Summarize
+
+                            </button>
+                        </div>
+
                     </div>
                 </div>
 
