@@ -205,7 +205,7 @@ const SpeechToText = () => {
     const text = ismobileFlag ? mobileData : storydata;
 
 
-    const { summarizeText, isLoading, error } = useSummary({ text, words: 200 });
+    const { summarizeText, isLoading, error } = useSummary({ text, words: 100 });
 
     useEffect(() => {
         const wordformsummary = summarizeText.props.children.split(" ").filter(word => word.trim().length > 0);
