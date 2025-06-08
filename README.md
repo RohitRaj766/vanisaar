@@ -15,6 +15,8 @@
   <h3>📦 Available Scripts</h3>
 
   <p>In the project directory, you can run:</p>
+  
+<h4><code>npm install</code></h4>
 
   <h4><code>npm start</code></h4>
   <p>
@@ -23,8 +25,3 @@
     The page will reload automatically if you make edits. Lint errors will also appear in the console.
   </p>
 
-  <h4><code>npm run build</code></h4>
-  <p>
-    Builds the app for production to the <code>build/</code> folder.<br />
-    It correctly bundles React in production mode and optimizes the build for best performance.
-  </p>
