@@ -25,5 +25,7 @@
     The page will reload automatically if you make edits. Lint errors will also appear in the console.
   </p>
 
-<h2> Video Preview </h2>
-<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7260282441632759808?collapsed=1" height="542" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+ <h2>🎥 Watch Video Preview</h2>
+  <a href="https://www.linkedin.com/posts/rohitraj2k04_techforstudents-readingmadeeasy-studentlife-activity-7260282608440250368-Fgej?utm_source=share&utm_medium=member_desktop&rcm=ACoAADWMvWwBv8o9k5kbp1ioEOdBQMTqeBnGh5c" target="_blank" rel="noopener noreferrer">
+
+  </a>
