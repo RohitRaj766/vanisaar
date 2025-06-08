@@ -16,9 +16,9 @@
 
   <p>In the project directory, you can run:</p>
   
-<h4><code>npm install</code></h4>
+<pre> <h4><code>npm install</code></h4>
 
-  <h4><code>npm start</code></h4>
+  <h4><code>npm start</code></h4></pre>
   <p>
     Runs the app in development mode.<br />
     Open <a href="http://localhost:3000" target="_blank" rel="noopener noreferrer">http://localhost:3000</a> to view it in the browser.<br />
