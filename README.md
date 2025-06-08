@@ -1,7 +1,7 @@
-  <h1>🔥 Qezee – AI-Powered Reading Companion</h1>
+<h1>🔥 Vanisaar – AI-Powered Reading Companion</h1>
   <p>
-    Qezee is an AI-powered tool designed to guide and support beginners on their reading journey. 
-    Built to foster curiosity, learning, and consistent reading habits, Qezee blends intelligent 
+    Vanisaar is an AI-powered tool designed to guide and support beginners on their reading journey. 
+    Built to foster curiosity, learning, and consistent reading habits, Vanisaar blends intelligent 
     support with a simple, engaging interface.
   </p>
 
