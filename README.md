@@ -25,3 +25,5 @@
     The page will reload automatically if you make edits. Lint errors will also appear in the console.
   </p>
 
+<h2> Video Preview </h2>
+<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7260282441632759808?collapsed=1" height="542" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
