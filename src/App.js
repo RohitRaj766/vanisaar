@@ -1,5 +1,5 @@
 import React from 'react';
-import SpeechToText from './components/SpeechToText/SpeechToText';
+import SpeechToText from './components/SpeechToText';
 
 const App = () => (
   <div className="App">

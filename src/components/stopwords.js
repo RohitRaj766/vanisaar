@@ -1,0 +1,28 @@
+export const STOP_WORDS = [
+
+    "a", "an", "the", "and", "but", "or", "for", "to", "with", "at", "in", "on", "by", "as", "of", "so", "that", "is", "was", "were", "are", "be", "been",
+    "having", "if", "then", "because", "although", "while", "until", "when", "i", "my", "me", "your", "you", "very", "do", "it", "which", "who", "whom",
+    "this", "these", "those", "how", "why", "where", "here", "there", "can", "could", "should", "would", "shall", "will", "just", "up", "down", "out", "into",
+    "over", "under", "again", "further", "more", "most", "some", "any", "each", "every", "few", "all", "one", "two", "three", "four", "five", "nor", "not",
+    "only", "own", "same", "such", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now", "d", "ll", "m", "o", "re", "ve", "y", "ain",
+    "aren", "couldn", "didn", "doesn", "hadn", "hasn", "haven", "isn", "ma", "mightn", "mustn", "needn", "shan", "shouldn", "wasn", "weren", "won", "wouldn",
+    "aren't", "haven't", "hasn't", "hadn't", "won't", "wouldn't", "can't", "couldn't", "don't", "doesn't", "didn't", "isn't", "wasn't", "weren't", "won't",
+    "wouldn't", "doesn't", "didn't", "isn't", "wasn't", "weren't", "ain't", "isn't", "shouldn't", "mustn't", "needn't", "hasn't", "haven't", "i'm", "you're",
+    "he's", "she's", "it's", "we're", "they're", "i've", "you've", "we've", "they've", "i'll", "you'll", "he'll", "she'll", "it'll", "we'll", "they'll", "i'd",
+    "you'd", "he'd", "she'd", "it'd", "we'd", "they'd", "i've", "you've", "he's", "she's", "it's", "we're", "they're", "her", "their", "them", "has", "had",
+    "have", "doing", "how", "if", "each", "before", "after", "while", "up", "down", "back", "here", "there", "into", "out", "any", "again", "further", "so",
+    "what", "all", "still", "only", "much", "he", "she", "we", "they", "which", "who", "why", "when", "where", "how", "now", "than", "too", "very", "yes", "no",
+    "some", "every", "about", "above", "below", "between", "under", "over", "among", "through", "around", "across", "before", "after", "during", "together",
+    "without", "along", "beside", "like", "just", "more", "less", "both", "another", "each", "last", "first", "next", "only", "another", "those", "this",
+    "until", "while", "above", "across", "against", "along", "among", "around", "before", "behind", "below", "beyond", "despite", "during", "except", "for",
+    "from", "in", "into", "near", "of", "off", "on", "out", "over", "since", "through", "throughout", "to", "under", "until", "up", "upon", "with", "within",
+    "without", "yet", "about", "all", "also", "an", "and", "are", "aren’t", "be", "because", "been", "being", "before", "being", "both", "but", "by", "can",
+    "cannot", "could", "couldn’t", "did", "didn't", "does", "doesn't", "don't", "doing", "don't", "doesn't", "don't", "during", "each", "few", "fewer", "for",
+    "from", "had", "hadn't", "has", "hasn't", "have", "haven’t", "having", "how", "how’s", "if", "i'm", "i’ve", "into", "is", "isn't", "isn’t", "it", "it’s",
+    "it's", "its", "itself", "let", "let's", "may", "more", "must", "mustn't", "my", "myself", "myself", "neither", "nor", "not", "of", "off", "on", "once",
+    "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "outside", "over", "own", "same", "she", "she’s", "should", "shouldn’t", "so", "some",
+    "such", "than", "that", "that's", "the", "theirs", "them", "themselves", "then", "there", "there’s", "therefore", "they", "they're", "they've", "this",
+    "those", "through", "to", "too", "under", "until", "up", "upon", "very", "we", "we’re", "we’ve", "what", "what’s", "whatever", "when", "when’s", "where",
+    "where’s", "wherever", "whether", "which", "which’s", "while", "while’s", "who", "who’s", "whoever", "whom", "whom’s", "whose", "why", "why’s", "whynot",
+    "you", "you’re", "you’ve", "you’ll", "you’d", "your", "yours", "yourself", "yourselves", "your", "yourselves"
+];
